@@ -1,0 +1,15 @@
+.display-inline-block {
+  display: inline-block;
+}
+
+.float-left {
+  float: left;
+}
+
+.display-flex{
+  display: flex;
+}
+
+.text-align-center {
+  text-align: center;
+}

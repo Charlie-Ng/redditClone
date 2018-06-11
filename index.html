@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Reddit Cloned</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="./main.css"/>
+    <link rel="stylesheet" href="./general.css"/>
+</head>
+<body ng-controller="mainPageCtrl as ctrl" ng-cloak>
+
+  <!-- all and favorite button section -->
+  <div class="main-btn-group btn-block">
+    <button class="btn-default btn" ng-click="ctrl.showAll()">All</button>
+    <button class="btn-default btn" ng-click="ctrl.showFavorite()">Favorite</button>
+  </div>
+
+  <!-- main post section -->
+  <div ng-repeat="item in ctrl.mainPageData | limitTo:ctrl.limitTo:ctrl.offset track by $index">
+    <div class="main-content-wrapper" ng-if="!ctrl.viewFavorite || item.isFavorite">
+
+        <!-- post number -->
+        <span class="main-rank" ng-if="!ctrl.viewFavorite || !item.isFavorite">{{ctrl.offset + $index + 1}}</span>
+
+        <!-- voting and favorite button section -->
+        <div class="main-vote-section">
+          <div>
+            <i class="fa fa-arrow-up main-arrow" aria-hidden="true"></i>
+          </div>
+          <div class="text-align-center" title="{{item.score}}">
+            {{item.scoreAdjusted}}
+          </div>
+          <div>
+            <i class="fa fa-arrow-down main-arrow" aria-hidden="true"></i>
+          </div>
+          <div>
+            <i ng-hide="item.isFavorite" class="fa fa-star-o main-not-favorite-icon" aria-hidden="true" ng-click="ctrl.setFavorite(ctrl.offset + $index)"></i>
+            <i ng-show="item.isFavorite" class="fa fa-star main-favorite-icon" aria-hidden="true" ng-click="ctrl.cancelFavorite(item.id)"></i>
+          </div>
+        </div>
+
+        <!-- preview image section -->
+        <div>
+          <a href="https://www.reddit.com/{{item.permalink}}">
+            <img ng-src="{{item.thumbnail}}" alt="img-{{$index + 1}}"
+            width="{{item.thumbnail_width / 2}}"
+            height="{{item.thumbnail_height / 2}}"
+            fallback-src="src/blank-image.png"/>
+          </a>
+        </div>
+
+        <!-- link section  -->
+        <div class="main-matter-wrapper">
+
+          <!-- main title section -->
+          <p class="main-title">
+            <a href="https://www.reddit.com/{{item.permalink}}">{{item.title}}</a>
+            <span ng-if="item.link_flair_text" class="main-linkflairlabel" title="{{::item.link_flair_text}}">{{::item.link_flair_text}}</span>
+            <span class="main-domain">
+              <a href="/domain/{{item.domain}}/">{{item.domain}}</a>
+            </span>
+          </p>
+
+          <!-- preview media buttons, shows only if exists -->
+          <div ng-if="item.is_reddit_media_domain" class="main-media-btns" ng-click="item.showPlayIcon = !item.showPlayIcon">
+            <div class="main-media-icon">
+              <i ng-show="item.showPlayIcon" class="fa fa-youtube-play" aria-hidden="true"></i>
+            </div>
+            <div class="main-media-icon">
+              <i ng-hide="item.showPlayIcon" class="fa fa-times-circle" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <!-- post history section -->
+          <p class="main-tagline">
+            submitted {{item.timeDisplayed}} ago by
+            <a href="https://www.reddit.com/user/{{item.author}}">{{item.author}}</a>
+            to
+            <a href="https://www.reddit.com/user/{{item.subreddit_name_prefixed}}">
+              {{item.subreddit_name_prefixed}}
+            </a>
+          </p>
+
+          <!-- post action section -->
+          <ul class="main-flat-list">
+            <li class="main-first">
+              <a href="https://www.reddit.com/{{item.permalink}}">{{item.num_comments}} comments</a>
+            </li>
+            <li><a href="" ng-click="ctrl.showPopup()">share</a></li>
+            <li><a href="" ng-click="ctrl.showPopup()">hide</a></li>
+            <li><a href="" ng-click="ctrl.showPopup()">report</a></li>
+          </ul>
+
+          <!-- preview media, shows only if exists and clicked -->
+          <div ng-if="!item.showPlayIcon">
+            <a href="https://i.redd.it/ksgm10jhf1311.jpg">
+              <img class="main-preview" src="{{item.preview.images[0].source.url}}"
+              height="{{item.preview.images[0].source.height - 350}}"
+              width="{{item.preview.images[0].source.width - 350}}"/>
+            </a>
+
+          </div>
+      </div>
+
+    </div> <!-- end of content-wrapper -->
+  </div> <!-- end of ng-repeat -->
+
+  <!-- pagination buttons -->
+  <div class="btn-block main-pagination-btns" ng-if="ctrl.usePagination">
+    <button class="btn-default btn" ng-repeat="i in [].constructor(ctrl.paginationBtnNum) track by $index" ng-click="ctrl.setOffset($index)">
+      {{$index + 1}}
+    </button>
+  </div>
+
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular-animate.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+  <script type="text/javascript" src="https://rawgithub.com/gsklee/ngStorage/master/ngStorage.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+  <script type="text/javascript" src="./controller.js"></script>
+  <script type="text/javascript" src="./service.js"></script>
+  <script type="text/javascript" src="./fallbackSrc.dir.js"></script>
+</body>
+</html>
